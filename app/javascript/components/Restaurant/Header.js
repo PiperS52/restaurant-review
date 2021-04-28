@@ -3,17 +3,14 @@ import styled from 'styled-components'
 
 const Wrapper = styled.div`
   padding: 50px 100px 50px 0;
-  
+  font-size: 30px;
+
   img {
-    height: 50px;
-    width: 50px;
+    height: 60px;
+    width: 60px;
     border-radius: 100%;
     border: 1px solid rgba(0,0,0,0.1);
     margin-bottom: -8px;
-  }
-
-  h1 {
-    font-size: 30px;
   }
 `
 const TotalReviews = styled.div`

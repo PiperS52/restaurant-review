@@ -1,7 +1,8 @@
 import axios from 'axios'
-import React, { useState, useEffect } from 'react' 
+import React, { useState, useEffect, Fragment } from 'react' 
 import Header from './Header'
 import styled from 'styled-components'
+import ReviewForm from './ReviewForm'
 
 const Wrapper = styled.div`
   margin-left: auto;
@@ -19,7 +20,7 @@ const Column = styled.div`
   }
 `
 const Main = styled.div`
-  left-padding: 50px;
+  padding-left: 50px;
 `
 
 const Restaurant = (props) => {
@@ -42,23 +43,54 @@ const Restaurant = (props) => {
     //restaurants/dominos-pizza
   }, [])
 
-  return (
-    <Wrapper>This is the Restaurants#show view for the app
-      <Column>
-        <Main>
-          { loaded &&
-            <Header
-              attributes={restaurant.data.attributes}
-              reviews={restaurant.included}
-            />
-          }
-        </Main>
-        <div className="reviews"></div>
-      </Column>
-      <Column>
-        <div className="review-form">[Review form goes here]</div>
-      </Column>
+  const handleChange = (e) => {
+    e.preventDefault()
+    setReview(Object.assign({}, review, {[e.target.name]: e.target.value}))
 
+    console.log('review:', review)
+    // console.log('name:', e.target.name, 'value:', e.target.value)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    const csrfToken = document.querySelector('[name=csrf-token]').content 
+    axios.defaults.headers.common['X-CSRF-TOKEN'] = csrfToken 
+
+    const restaurant_id = restaurant.data.id 
+    axios.post('/api/v1/reviews', {review, restaurant_id})
+    .then(resp => {
+      const included = [...restaurant.included, resp.data]
+      setRestaurant({...restaurant, included})
+      setReview({title: '', description: '', score: 0})
+    })
+    .catch(resp => {})
+  }
+
+  return (
+    <Wrapper>
+      {
+        loaded &&
+        <Fragment>
+          <Column>
+            <Main>       
+                <Header
+                  attributes={restaurant.data.attributes}
+                  reviews={restaurant.included}
+                />
+            </Main>
+            <div className="reviews"></div>
+          </Column>
+          <Column>
+            <ReviewForm
+              handleChange={handleChange}
+              handleSubmit={handleSubmit}
+              attributes={restaurant.data.attributes}
+              review={review}
+            />
+          </Column>
+        </Fragment>
+      }    
     </Wrapper>
   )
 }
