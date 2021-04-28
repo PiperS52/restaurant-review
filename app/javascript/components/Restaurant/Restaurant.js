@@ -67,6 +67,12 @@ const Restaurant = (props) => {
     .catch(resp => {})
   }
 
+  const setRating = (score, e) => {
+    e.preventDefault()
+
+    setReview({...review, score})
+  }
+
   return (
     <Wrapper>
       {
@@ -85,6 +91,7 @@ const Restaurant = (props) => {
             <ReviewForm
               handleChange={handleChange}
               handleSubmit={handleSubmit}
+              setRating={setRating}
               attributes={restaurant.data.attributes}
               review={review}
             />
